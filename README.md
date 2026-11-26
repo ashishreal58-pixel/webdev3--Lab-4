@@ -37,7 +37,6 @@ Project Structure
 ├── package.json
 ├── server.js
 └── test.http
-Setup & Run
 Install dependencies
 
 npm install
