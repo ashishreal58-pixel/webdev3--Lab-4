@@ -1,0 +1,96 @@
+@baseUrl = http://localhost:5000
+
+### 1. Health Check
+GET {{baseUrl}}/api/health
+
+### 2. Signup (Alice) -> 201 { message: "User registered", id, username, email }
+POST {{baseUrl}}/api/auth/signup
+Content-Type: application/json
+
+{
+  "username": "Alice",
+  "email": "alice@example.com",
+  "password": "password123"
+}
+
+### 3. Signup Duplicate Email (409)
+POST {{baseUrl}}/api/auth/signup
+Content-Type: application/json
+
+{
+  "username": "Alice",
+  "email": "alice@example.com",
+  "password": "password123"
+}
+
+### 4. Login (Alice) -> 200 { message: "Login successful", token, user }
+# @name loginAlice
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "alice@example.com",
+  "password": "password123"
+}
+
+### 5. Login (Admin)
+# @name loginAdmin
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "AdminPassword123!"
+}
+
+### 6. Get Profile (Authenticated)
+GET {{baseUrl}}/api/profile
+Authorization: Bearer {{loginAlice.response.body.token}}
+
+### 7. Admin Users as Normal User (403 Forbidden)
+GET {{baseUrl}}/api/admin/users
+Authorization: Bearer {{loginAlice.response.body.token}}
+
+### 8. Admin Users as Admin (200 OK)
+GET {{baseUrl}}/api/admin/users
+Authorization: Bearer {{loginAdmin.response.body.token}}
+
+### 9. Notes Without Token (403 { message: "No token provided" })
+GET {{baseUrl}}/api/notes
+
+### 10. Notes With Invalid Token (401 { message: "Invalid or expired token" })
+GET {{baseUrl}}/api/notes
+Authorization: Bearer invalid.jwt.token
+
+### 11. Create Note -> 201 (returns created note object)
+# @name createNote
+POST {{baseUrl}}/api/notes
+Authorization: Bearer {{loginAlice.response.body.token}}
+Content-Type: application/json
+
+{
+  "title": "Lab 4 Note",
+  "content": "Testing authenticated notes API."
+}
+
+### 12. Get My Notes -> 200 (returns plain array)
+GET {{baseUrl}}/api/notes
+Authorization: Bearer {{loginAlice.response.body.token}}
+
+### 13. Get Note By ID
+GET {{baseUrl}}/api/notes/{{createNote.response.body._id}}
+Authorization: Bearer {{loginAlice.response.body.token}}
+
+### 14. Update Note
+PUT {{baseUrl}}/api/notes/{{createNote.response.body._id}}
+Authorization: Bearer {{loginAlice.response.body.token}}
+Content-Type: application/json
+
+{
+  "title": "Lab 4 Note (Updated)",
+  "content": "Updated content."
+}
+
+### 15. Delete Note
+DELETE {{baseUrl}}/api/notes/{{createNote.response.body._id}}
+Authorization: Bearer {{loginAlice.response.body.token}}
