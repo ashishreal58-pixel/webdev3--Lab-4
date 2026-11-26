@@ -62,3 +62,9 @@ PUT /api/notes/:id — Update own note
 DELETE /api/notes/:id — Delete own note
 Screenshots
 Signup (POST /api/auth/signup → 201) 
+
+
+Screenshots
+Signup (POST /api/auth/signup → 201)
+![Uploading Postman Signup Request with Terminal Logs.png…]()
+
